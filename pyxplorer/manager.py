@@ -29,6 +29,9 @@ class Database:
     self._tables = [t.Table(r[0], con=self.connection, db=self.db) for r in cursor.fetchall()]
     return self._tables
 
+  def __len__(self):
+    return len(self.tables())
+
   @h.memoize
   def tcounts(self):
     """
@@ -44,6 +47,7 @@ class Database:
     :return: a data frame with names and distinct counts and fractions for all columns in the database
     """
     print("WARNING: Distinct value count for all tables can take a long time...", file=sys.stderr)
+    sys.stderr.flush()
 
     data = []
     for t in self.tables():
@@ -55,3 +59,10 @@ class Database:
 
   def _repr_html_(self):
     return h.render_table(["Name", "Size"], [[x.name(), x.size()] for x in self.tables()])
+
+
+  def num_columns(self):
+    return sum([len(x.columns()) for x in self.tables()])
+
+  def num_tuples(self):
+    return sum([x.size() for x in self.tables()])

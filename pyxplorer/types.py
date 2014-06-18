@@ -90,7 +90,7 @@ class Column:
 
   @h.memoize
   def most_frequent(self):
-    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="cnt DESC LIMIT 1")
+    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="__cnt DESC LIMIT 1")
     self._most_frequent = res[0][0]
     return self._most_frequent
 
@@ -188,6 +188,9 @@ class Table:
     raise KeyError(item)
 
   def __dir__(self):
+    """
+    :return: an array of custom attributes, for code-completion in ipython
+    """
     return [x.name() for x in self.columns()]
 
 
@@ -196,7 +199,25 @@ class Table:
 
 
   def __getattr__(self, item):
+    """
+    :param item: name of the column
+    :return: column object for attribute-like access to the column
+    """
     for x in self.columns():
       if x.name() == item:
         return x
     raise AttributeError("'%s' object has no attribute '%s'" % (type(self).__name__, item))
+
+
+  def num_columns(self):
+    """
+    :return: number of columns of the table
+    """
+    return len(self.columns())
+
+  def distinct_value_fractions(self):
+    """
+    :return: returns a data frame of name distinct value fractions
+    """
+    return pd.DataFrame([c.dcount() / float(self.size()) for c in self.columns()], index=[c.name() for c in self.columns()], columns=["fraction"])
+
