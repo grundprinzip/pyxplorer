@@ -77,7 +77,7 @@ class Column:
     """
     Build the distribution of distinct values
     """
-    res = self._qexec("%s, count(*) as cnt" % self.name() ,group="%s" % self.name(), order="cnt DESC LIMIT %d" %(limit))
+    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="__cnt DESC LIMIT %d" %(limit))
     dist = []
     cnt = self._table.size()
     for i,r in enumerate(res):
@@ -90,7 +90,7 @@ class Column:
 
   @h.memoize
   def most_frequent(self):
-    res = self._qexec("%s, count(*) as cnt" % self.name() ,group="%s" % self.name(), order="cnt DESC LIMIT 1")
+    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="cnt DESC LIMIT 1")
     self._most_frequent = res[0][0]
     return self._most_frequent
 
@@ -106,9 +106,15 @@ class Column:
     return h.render_table(["Name", "Value"], [[x.__name__, x()] for x in funs])
 
 
+
 class Table:
   """
   Generic Table Object
+
+  This class provides simple access to the columns of the table. Most of the methods that perform actual data access
+  are cached to avoid costly lookups.
+
+
   """
 
   def __init__(self, name, con, db="default"):
@@ -180,6 +186,9 @@ class Table:
       if x.name() == item:
         return x
     raise KeyError(item)
+
+  def __dir__(self):
+    return [x.name() for x in self.columns()]
 
 
   def __repr__(self):

@@ -1,4 +1,6 @@
+from __future__ import print_function
 import pandas as pd
+import  sys
 from impala.dbapi import connect
 import types as t
 import helper as h
@@ -41,6 +43,8 @@ class Database:
     """
     :return: a data frame with names and distinct counts and fractions for all columns in the database
     """
+    print("WARNING: Distinct value count for all tables can take a long time...", file=sys.stderr)
+
     data = []
     for t in self.tables():
       for c in t.columns():
