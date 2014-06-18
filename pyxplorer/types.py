@@ -35,7 +35,7 @@ class Column:
   def name(self):
     return self._name
 
-  def _repr_html(self):
+  def _repr_html_(self):
     pass
 
   @classmethod
@@ -67,10 +67,9 @@ class Column:
 
   @h.memoize
   def dcount(self):
-    if self._dcount == None:
-      res = self._qexec("count(distinct %s)" % self._name)
-      if len(res) > 0:
-        self._dcount = res[0][0]
+    res = self._qexec("count(distinct %s)" % self._name)
+    if len(res) > 0:
+      self._dcount = res[0][0]
     return self._dcount
 
   @h.memoize
@@ -102,6 +101,9 @@ class Column:
     return self._least_frequent
 
 
+  def _repr_html_(self):
+    funs = [self.min, self.max, self.dcount, self.most_frequent, self.least_frequent]
+    return h.render_table(["Name", "Value"], [[x.__name__, x()] for x in funs])
 
 
 class Table:
@@ -182,3 +184,10 @@ class Table:
 
   def __repr__(self):
     return "<Table: \"%s.%s\">" %(self._db, self._name)
+
+
+  def __getattr__(self, item):
+    for x in self.columns():
+      if x.name() == item:
+        return x
+    raise AttributeError("'%s' object has no attribute '%s'" % (type(self).__name__, item))
