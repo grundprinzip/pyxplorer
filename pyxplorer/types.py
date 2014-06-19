@@ -29,14 +29,15 @@ class Column:
     self._con = con
     self._table = table
 
-  def __repr__(self):
-    return self._name
+  def __str__(self):
+    buf = "%s\n" % self.name()
+    funs = [self.min, self.max, self.dcount, self.most_frequent, self.least_frequent]
+    for x in funs:
+      buf += "%s:\t%s\n" %(x.__name__, x())
+    return buf
 
   def name(self):
     return self._name
-
-  def _repr_html_(self):
-    pass
 
   @classmethod
   def build(cls, data, con, table):
@@ -92,13 +93,15 @@ class Column:
   def most_frequent(self):
     res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="__cnt DESC LIMIT 1")
     self._most_frequent = res[0][0]
-    return self._most_frequent
+    self._most_frequent_count = res[0][1]
+    return self._most_frequent, self._most_frequent_count
 
   @h.memoize
   def least_frequent(self):
     res = self._qexec("%s, count(*) as cnt" % self.name() ,group="%s" % self.name(), order="cnt ASC LIMIT 1")
     self._least_frequent = res[0][0]
-    return self._least_frequent
+    self._least_frequent_count = res[0][1]
+    return self._least_frequent, self._least_frequent_count
 
 
   def _repr_html_(self):
