@@ -2,11 +2,14 @@ import functools
 from StringIO import StringIO
 
 
+def car(data):
+  return [x[0] for x in data]
+
 def render_table(head, rows, limit=10):
   buf = StringIO()
   buf.write("<table><tr>")
   for h in head:
-    buf.write("<th>%s</th>" % h)
+    buf.write("<th>{0}</th>".format(h))
   buf.write("</tr>")
 
   # Build the slices we need
@@ -20,7 +23,7 @@ def render_table(head, rows, limit=10):
   for r in data:
     buf.write("<tr>")
     for c in r:
-      buf.write("<td>%s</td>"%c)
+      buf.write("<td>{0}</td>".format(c))
     buf.write("</tr>")
 
 
@@ -28,7 +31,7 @@ def render_table(head, rows, limit=10):
     for r in footer:
       buf.write("<tr>")
       for c in r:
-        buf.write("<td>%s</td>"%c)
+        buf.write("<td>{0}</td>".format(c))
       buf.write("</tr>")
   buf.write("</table>")
   buf.write("<p>Rows: %d / Columns: %d</p>" % (len(rows), len(head)))

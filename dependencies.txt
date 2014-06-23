@@ -2,3 +2,6 @@ pympala
 snakebite
 pandas
 pyhs2
+numba
+llvmpy
+pywebhdfs

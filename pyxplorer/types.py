@@ -89,24 +89,41 @@ class Column:
 
     return self._distribution
 
-  @h.memoize
   def most_frequent(self):
-    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="__cnt DESC LIMIT 1")
+    res =  self.n_most_frequent(1)
     self._most_frequent = res[0][0]
     self._most_frequent_count = res[0][1]
     return self._most_frequent, self._most_frequent_count
 
-  @h.memoize
   def least_frequent(self):
-    res = self._qexec("%s, count(*) as cnt" % self.name() ,group="%s" % self.name(), order="cnt ASC LIMIT 1")
+    res = self.n_least_frequent(1)
     self._least_frequent = res[0][0]
     self._least_frequent_count = res[0][1]
     return self._least_frequent, self._least_frequent_count
 
+  @h.memoize
+  def n_most_frequent(self, limit=10):
+    res = self._qexec("%s, count(*) as __cnt" % self.name() ,group="%s" % self.name(), order="__cnt DESC LIMIT %d" % limit)
+    return res
+
+  def n_least_frequent(self, limit=10):
+    res = self._qexec("%s, count(*) as cnt" % self.name() ,group="%s" % self.name(), order="cnt ASC LIMIT %d" % limit)
+    return res
 
   def _repr_html_(self):
-    funs = [self.min, self.max, self.dcount, self.most_frequent, self.least_frequent]
-    return h.render_table(["Name", "Value"], [[x.__name__, x()] for x in funs])
+
+    funs = [lambda : "res"]
+
+    #print self.n_least_frequent()
+    funs = [("Min", self.min), ("Max", self.max), ("#Distinct Values", self.dcount),
+            ("Most Frequent", lambda : "{0} ({1})".format(*self.most_frequent())),
+            ("Least Frequent",lambda : "{0} ({1})".format(*self.least_frequent())),
+            ("Top 10 MF", lambda : ",".join(map(str, h.car(self.n_most_frequent())))),
+            ("Top 10 LF",lambda : ", ".join(map(str, h.car(self.n_least_frequent()))))
+             ]
+    return h.render_table(["Name", "Value"], [[x[0], x[1]()] for x in funs])
+
+
 
 
 
