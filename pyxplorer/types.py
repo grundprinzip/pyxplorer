@@ -1,6 +1,8 @@
-import pandas as pd
+from __future__ import print_function
 
+import pandas as pd
 import helper as h
+import sys
 
 
 class Column:
@@ -10,13 +12,12 @@ class Column:
 
     def _qexec(self, fld, group=None, order=None):
         c = self._con.cursor()
-
-        if group is None:
+        if not group is None:
             group = " group by %s" % group
         else:
             group = ""
 
-        if order is None:
+        if not order is None:
             order = " order by %s" % order
         else:
             order = ""
@@ -38,6 +39,9 @@ class Column:
         self._most_frequent_count = None
         self._least_frequent = None
         self._least_frequent_count = None
+
+    def __repr__(self):
+        return self.name()
 
     def __str__(self):
         buf = "%s\n" % self.name()
@@ -123,13 +127,25 @@ class Column:
                           order="cnt ASC LIMIT %d" % limit)
         return res
 
+    def size(self):
+        return self._table.size()
+
+    def uniqueness(self):
+        return self.dcount() / float(self.size())
+
+    def constancy(self):
+        tup = self.most_frequent()
+        return tup[1] / float(self.size())
+
     def _repr_html_(self):
 
         funs = [("Min", self.min), ("Max", self.max), ("#Distinct Values", self.dcount),
-                ("Most Frequent", lambda: "{0} ({1})".format(*self.most_frequent())),
-                ("Least Frequent", lambda: "{0} ({1})".format(*self.least_frequent())),
-                ("Top 10 MF", lambda: ",".join(map(str, h.car(self.n_most_frequent())))),
-                ("Top 10 LF", lambda: ", ".join(map(str, h.car(self.n_least_frequent()))))
+        ("Most Frequent", lambda: "{0} ({1})".format(*self.most_frequent())),
+        ("Least Frequent", lambda: "{0} ({1})".format(*self.least_frequent())),
+        ("Top 10 MF", lambda: ",".join(map(str, h.car(self.n_most_frequent())))),
+        ("Top 10 LF", lambda: ", ".join(map(str, h.car(self.n_least_frequent())))),
+        ("Uniqueness", self.uniqueness),
+        ("Constancy", self.constancy),
         ]
         return h.render_table(["Name", "Value"], [[x[0], x[1]()] for x in funs])
 
