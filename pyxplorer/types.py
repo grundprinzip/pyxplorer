@@ -104,12 +104,14 @@ class Column:
 
         return self._distribution
 
+    @h.memoize
     def most_frequent(self):
         res = self.n_most_frequent(1)
         self._most_frequent = res[0][0]
         self._most_frequent_count = res[0][1]
         return self._most_frequent, self._most_frequent_count
 
+    @h.memoize
     def least_frequent(self):
         res = self.n_least_frequent(1)
         self._least_frequent = res[0][0]
@@ -122,6 +124,7 @@ class Column:
                           order="__cnt DESC LIMIT %d" % limit)
         return res
 
+    @h.memoize
     def n_least_frequent(self, limit=10):
         res = self._qexec("%s, count(*) as cnt" % self.name(), group="%s" % self.name(),
                           order="cnt ASC LIMIT %d" % limit)
