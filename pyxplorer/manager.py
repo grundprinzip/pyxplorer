@@ -60,6 +60,9 @@ class Database:
         return h.render_table(["Name", "Size"], [[x.name(), x.size()] for x in self.tables()])
 
 
+    def num_tables(self):
+        return len(self)
+
     def num_columns(self):
         return sum([len(x.columns()) for x in self.tables()])
 

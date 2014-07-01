@@ -9,7 +9,7 @@ setup(
     url='http://github.com/grundprinzip/pyxplorer',
     license='LICENSE',
     description='Useful towel-related stuff.',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[
         "snakebite",
         "pyhs2",
