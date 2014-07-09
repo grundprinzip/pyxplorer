@@ -9,7 +9,7 @@ setup(
     url='http://github.com/grundprinzip/pyxplorer',
     license='LICENSE',
     description='Simple Big Data Profiling',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     install_requires=[
         "snakebite",
         "pyhs2",
