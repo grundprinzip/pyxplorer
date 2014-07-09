@@ -36,7 +36,7 @@ assume the result shows a ```sales_orders``` table, what can we do now?::
   orders.size() # 100M
   orders.columns() # [ol_w_id, ol_d_id, ol_o_id, ol_number, ol_i_id, ...]
 
-Ok, if we have so many columns, what can we find out about a single column?
+Ok, if we have so many columns, what can we find out about a single column?::
 
   orders.ol_d_id.min() # 1
   orders.ol_d_id.max() # 9999
