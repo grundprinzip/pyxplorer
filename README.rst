@@ -9,8 +9,8 @@ understand simplistic SQL queries.
 
 I built this piece of software while trying to get a better understanding of
 data distribution in a massive several hundred million record large dataset.
-Depending on the size of the dataset and the query engine the resposne time
-can ranging from seconds (Impala) to minutes (Hive) or even hourse (MySQL)
+Depending on the size of the dataset and the query engine the response time
+can ranging from seconds (Impala) to minutes (Hive) or even hours (MySQL)
 
 The typical use case is to use ```pyxplorer``` interactively from an iPython
 Notebook or iPython shell to incrementally extract information about your data.
